@@ -10,7 +10,19 @@ Thank you for your understanding and support during the project's active phase! 
 
 The **AnimeDexApi Project** is being continued by <a href=https://github.com/devz-on>Devz</a>. it is being continued just for Educational purposes only. I Dev or original creator of this Project won't be responsible for any misuse of it for any type of Illigal or Unauthorised Purposes the User will be Responsible for it's use as this Project is just to understand how any website scrapper works.
 
-This is not advised to use this Project to Deploy a Website as this Project is Just for Experiment and Fair Educational use.
+## ⚠️ Disclaimer: Educational Use Only
+
+The **DevzAnimeApi** project is developed purely for educational purposes. This project is intended to teach developers how to implement web scrapers, not for commercial or illegal use. The developer (Devz) **is not responsible** for any misuse of this project for unauthorized or illegal activities, such as violating copyright laws or scraping content from protected sources.
+
+By using this project, you agree that you are solely responsible for complying with all applicable laws, including but not limited to copyright, privacy, and terms of service of the websites you scrape. The creator strongly advises against using this project for scraping websites hosting copyrighted content without permission.
+
+## Features
+- **Anime API**: Provides data scraping from anime-related sources (e.g., Gogoanime, Anilist).
+- **Cloudflare Workers Deployment**: Easily deployable on Cloudflare for educational experiments.
+  
+> **Important**: This API is not designed for production use and should not be deployed publicly without ensuring full legal compliance with the relevant laws.
+>
+>  Documentation : https://api.bhoothihu.workers.dev
 
 ### Project Links :
 
@@ -21,14 +33,6 @@ This is not advised to use this Project to Deploy a Website as this Project is J
 <p>AnimeDex Proxy Repository : <a href=https://github.com/TechShreyash/CloudflareWorker/tree/main/animedexproxy>TechShreyash/animedexproxy</a>
 <p>ThumbGen Api Repository : <a href=https://github.com/TechShreyash/ThumbApi>TechShreyash/ThumbApi</a>
 <p>Stats Api Repository : <a href=https://github.com/TechShreyash/StatsApi>TechShreyash/StatsApi</a>
-
-## DevzAnimeApi
-
-- Anime api for some of my projects
-- Gogoanime scrapper
-- Anilist scrapper
-
-Documentation : https://api.bhoothihu.workers.dev
 
 ## Deploy To Cloudflare (Easy Way)
 
@@ -77,3 +81,7 @@ wrangler deploy
 Stay informed about the latest updates by joining our channels / groups :
 
 [![Telegram Channel](https://img.shields.io/static/v1?label=Join&message=Telegram%20Channel&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://telegram.me/TechZBots) [![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://telegram.me/TechZBots_Support)
+
+This project is licensed under the MIT License. Please review the terms of the license in the LICENSE file. The developer assumes no liability for any misuse of the code or violations of any legal agreements by users.
+
+For more details, check the #LICENSE file.
