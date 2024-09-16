@@ -200,49 +200,44 @@ async function getM3U8(iframe_url) {
 
 async function GogoDLScrapper(animeid, cookie) {
     try {
-      cookie = atob(cookie);
-      const response = await fetch(`${BaseURL}/${animeid}`, {
-        headers: {
-          Cookie: `auth=${cookie}`
-        }
-      });
-      const html3 = await response.text();
-      const body = esm_default2.load(html3);
-      let data2 = {};
-      const links = body("div.cf-download").find("a");
-      links.each((i, link) => {
-        const a = body(link);
-        data2[a.text().trim()] = a.attr("href").trim();
-      });
-      function changeDownloadDomain(originalLink) {
-        const oldDomain = "https://gredirect.info/";
-        const newDomain = "https://ggredi.info/";
+        cookie = atob(cookie);
+        const response = await fetch(`${BaseURL}/${animeid}`, {
+            headers: {
+                Cookie: `auth=${cookie}`,
+            },
+        });
+        const html = await response.text();
+        const body = cheerio.load(html);
+        let data = {};
+        const links = body("div.cf-download").find("a");
         
-        // Check if the original link starts with the old domain, if so, replace it
-        if (originalLink.startsWith(oldDomain)) {
-          return originalLink.replace(oldDomain, newDomain);
+        // Function to change the domain
+        function changeDownloadDomain(originalLink) {
+            const oldDomain = "https://gredirect.info/";
+            const newDomain = "https://ggredi.info/";
+
+            if (originalLink.startsWith(oldDomain)) {
+                return originalLink.replace(oldDomain, newDomain);
+            }
+            return originalLink;
         }
-        
-        // Return the original link if it's not a download link from the old domain
-        return originalLink;
-      }
-      
-      // Example usage:
-      const originalLink = "https://gredirect.info/download/episode/123";
-      const updatedLink = changeDownloadDomain(originalLink);
-      console.log(updatedLink); // Outputs: "https://ggredi.info/download/episode/123"
-      // Add this function after fetching the links
-  data2 = Object.keys(data2).reduce((acc, key) => {
-    acc[key] = changeDownloadDomain(data2[key]);
-    return acc;
-  }, {});
-  
-      
-      return data2;
+
+        links.each((i, link) => {
+            const a = body(link);
+            let downloadLink = a.attr("href").trim();
+
+            // Change the domain of the download link
+            downloadLink = changeDownloadDomain(downloadLink);
+            
+            data[a.text().trim()] = downloadLink;
+        });
+
+        return data;
     } catch (e) {
-      return e;
+        return e;
     }
-  }
+}
+
 
 async function getGogoAuthKey() {
     const response = await fetch(
