@@ -76,7 +76,7 @@ wrangler deploy
 
 - Updates about api will be realeased at our [Telegram Channel](https://telegram.me/TechZBots)
 
-## 🔔 Join For Latest Updates
+## 🔔 Join For Latest Updates https://github.com/devz-on/DevzAnimeApi/blob/main/LICENSE
 
 Stay informed about the latest updates by joining our channels / groups :
 
@@ -84,4 +84,4 @@ Stay informed about the latest updates by joining our channels / groups :
 
 This project is licensed under the MIT License. Please review the terms of the license in the LICENSE file. The developer assumes no liability for any misuse of the code or violations of any legal agreements by users.
 
-For more details, check the #LICENSE file.
+For more details, check the [LICENSE](https://github.com/devz-on/DevzAnimeApi/blob/main/LICENSE) file.
