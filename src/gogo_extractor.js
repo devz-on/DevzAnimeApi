@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 
+// Key and IV used for encryption/decryption
 const keys = {
     key: CryptoJS.enc.Utf8.parse('37911490979715163134003223491201'),
     second_key: CryptoJS.enc.Utf8.parse('54674138327930866480207815084989'),
@@ -17,11 +18,13 @@ export async function generateEncryptAjaxParameters($, id) {
         iv: keys.iv,
     });
 
+    // Decrypt the token from the script
     const script = $("script[data-name='episode']").data().value;
     const token = CryptoJS.AES.decrypt(script, keys.key, {
         iv: keys.iv,
     }).toString(CryptoJS.enc.Utf8);
 
+    // Return the generated parameters for AJAX request
     return 'id=' + encrypted_key + '&alias=' + id + '&' + token;
 }
 
@@ -92,12 +95,14 @@ export function changeDownloadDomain(originalLink) {
     const oldDomain = "https://gredirect.info/";
     const newDomain = "https://ggredi.info/";
 
+    // If the download link uses the old domain, update it to the new domain
     if (originalLink.startsWith(oldDomain)) {
         return originalLink.replace(oldDomain, newDomain);
     }
     return originalLink;
 }
 
+// Export all the necessary functions
 export {
     generateEncryptAjaxParameters,
     decryptEncryptAjaxResponse,
