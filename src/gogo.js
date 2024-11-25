@@ -1,13 +1,11 @@
-import {
-    generateEncryptAjaxParameters,
-    decryptEncryptAjaxResponse,
-} from "./gogo_extractor.js";
+import { generateEncryptAjaxParameters, decryptEncryptAjaxResponse } from "./gogo_extractor.js";
 import * as cheerio from 'cheerio';
 
 const BaseURL = "https://gogoanime3.co";
 const USER_AGENT =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36";
 
+// Function to perform a search query on GogoAnime
 async function getSearch(name, page = 1) {
     const response = await fetch(
         BaseURL + "/search.html?keyword=" + name + "&page=" + page
@@ -32,6 +30,7 @@ async function getSearch(name, page = 1) {
     return searchResults;
 }
 
+// Function to get detailed anime information by ID
 async function getAnime(id) {
     let response = await fetch(BaseURL + "/category/" + id);
     let html = await response.text();
@@ -57,7 +56,7 @@ async function getAnime(id) {
         else animeData[keyName] = $x("a").text().trim() || null;
     });
 
-    animeData.plot_summary = $("div.description").text().trim()
+    animeData.plot_summary = $("div.description").text().trim();
 
     const animeid = $("input#movie_id").attr("value");
     response = await fetch(
@@ -84,6 +83,7 @@ async function getAnime(id) {
     return animeData;
 }
 
+// Function to get recent anime
 async function getRecentAnime(page = 1) {
     const response = await fetch(BaseURL + "/?page=" + page);
     let html = await response.text();
@@ -104,6 +104,7 @@ async function getRecentAnime(page = 1) {
     return recentAnime;
 }
 
+// Function to get popular anime
 async function getPopularAnime(page = 1, max = 10) {
     const response = await fetch(BaseURL + "/popular.html?page=" + page.toString());
     let html = await response.text();
@@ -125,6 +126,7 @@ async function getPopularAnime(page = 1, max = 10) {
     return popularAnime.slice(0, max);
 }
 
+// Function to get anime episode details
 async function getEpisode(id) {
     const link = `${BaseURL}/${id}`;
 
@@ -143,7 +145,6 @@ async function getEpisode(id) {
     });
 
     let m3u8;
-    console.log(iframe);
     try { m3u8 = await getM3U8(iframe); }
     catch (e) { console.log(e); m3u8 = null; }
 
@@ -161,11 +162,11 @@ async function getEpisode(id) {
     return ScrapedAnime;
 }
 
+// Helper function to fetch M3U8 stream URL from iframe
 async function getM3U8(iframe_url) {
     let sources = [];
     let sources_bk = [];
     let serverUrl = new URL(iframe_url);
-    console.log(serverUrl.href);
     const goGoServerPage = await fetch(serverUrl.href, {
         headers: { "User-Agent": USER_AGENT },
     });
@@ -189,7 +190,6 @@ async function getM3U8(iframe_url) {
     const res = decryptEncryptAjaxResponse(await fetchRes.json());
     res.source.forEach((source) => sources.push(source));
     res.source_bk.forEach((source) => sources_bk.push(source));
-    console.log(res)
 
     return {
         Referer: serverUrl.href,
@@ -198,6 +198,7 @@ async function getM3U8(iframe_url) {
     };
 }
 
+// Helper function to change domain of download links
 async function GogoDLScrapper(animeid, cookie) {
     try {
         cookie = atob(cookie);
@@ -210,7 +211,7 @@ async function GogoDLScrapper(animeid, cookie) {
         const body = cheerio.load(html);
         let data = {};
         const links = body("div.cf-download").find("a");
-        
+
         // Function to change the domain
         function changeDownloadDomain(originalLink) {
             const oldDomain = "https://gredirect.info/";
@@ -228,7 +229,7 @@ async function GogoDLScrapper(animeid, cookie) {
 
             // Change the domain of the download link
             downloadLink = changeDownloadDomain(downloadLink);
-            
+
             data[a.text().trim()] = downloadLink;
         });
 
@@ -238,7 +239,7 @@ async function GogoDLScrapper(animeid, cookie) {
     }
 }
 
-
+// Helper function to fetch GogoAnime authentication cookie
 async function getGogoAuthKey() {
     const response = await fetch(
         "https://api.github.com/repos/TechShreyash/TechShreyash/contents/gogoCookie.txt",
@@ -254,6 +255,7 @@ async function getGogoAuthKey() {
     return cookie;
 }
 
+// Exporting functions
 export {
     getSearch,
     getAnime,
@@ -263,6 +265,3 @@ export {
     GogoDLScrapper,
     getGogoAuthKey,
 };
-// getEpisode("horimiya-episode-1").then((data) => {
-//     console.log(data.stream.sources);
-// });
