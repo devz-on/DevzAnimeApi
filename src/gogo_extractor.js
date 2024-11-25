@@ -72,11 +72,19 @@ async function getM3U8(iframe_url) {
     );
 
     // Decrypt the AJAX response to get the m3u8 sources
-    const res = decryptEncryptAjaxResponse(await fetchRes.json());
-    
+    const res = await fetchRes.json();
+    const decryptedResponse = decryptEncryptAjaxResponse(res);
+
+    // Debug log to inspect the decrypted response
+    console.log('Decrypted Response:', decryptedResponse);
+
     // Extract m3u8 sources and backup sources from the response
-    res.source.forEach((source) => sources.push(source));
-    res.source_bk.forEach((source) => sources_bk.push(source));
+    if (decryptedResponse.source) {
+        decryptedResponse.source.forEach((source) => sources.push(source));
+    }
+    if (decryptedResponse.source_bk) {
+        decryptedResponse.source_bk.forEach((source) => sources_bk.push(source));
+    }
 
     // Return the streamable sources
     return {
@@ -85,6 +93,7 @@ async function getM3U8(iframe_url) {
         sources_bk: sources_bk,
     };
 }
+
 
 /**
  * Function to change the domain for download links if required
