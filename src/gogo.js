@@ -1,11 +1,16 @@
-import { generateEncryptAjaxParameters, decryptEncryptAjaxResponse } from "./gogo_extractor.js";
+import {
+    generateEncryptAjaxParameters,
+    decryptEncryptAjaxResponse,
+    getM3U8,  // Import the updated getM3U8 function from gogo_extractor.js
+    changeDownloadDomain,
+} from "./gogo_extractor.js";
 import * as cheerio from 'cheerio';
 
 const BaseURL = "https://gogoanime3.co";
 const USER_AGENT =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36";
 
-// Function to perform a search query on GogoAnime
+// Search for anime by name
 async function getSearch(name, page = 1) {
     const response = await fetch(
         BaseURL + "/search.html?keyword=" + name + "&page=" + page
@@ -30,7 +35,7 @@ async function getSearch(name, page = 1) {
     return searchResults;
 }
 
-// Function to get detailed anime information by ID
+// Fetch anime details by ID
 async function getAnime(id) {
     let response = await fetch(BaseURL + "/category/" + id);
     let html = await response.text();
@@ -83,7 +88,7 @@ async function getAnime(id) {
     return animeData;
 }
 
-// Function to get recent anime
+// Fetch recent anime
 async function getRecentAnime(page = 1) {
     const response = await fetch(BaseURL + "/?page=" + page);
     let html = await response.text();
@@ -104,7 +109,7 @@ async function getRecentAnime(page = 1) {
     return recentAnime;
 }
 
-// Function to get popular anime
+// Fetch popular anime
 async function getPopularAnime(page = 1, max = 10) {
     const response = await fetch(BaseURL + "/popular.html?page=" + page.toString());
     let html = await response.text();
@@ -126,7 +131,7 @@ async function getPopularAnime(page = 1, max = 10) {
     return popularAnime.slice(0, max);
 }
 
-// Function to get anime episode details
+// Fetch anime episode by ID
 async function getEpisode(id) {
     const link = `${BaseURL}/${id}`;
 
@@ -137,16 +142,23 @@ async function getEpisode(id) {
     const iframe = $("div.play-video iframe").attr("src");
     const serverList = $("div.anime_muti_link ul li");
     const servers = {};
+
+    // Process servers and streamable links
     serverList.each(function (i, elem) {
         elem = $(elem);
-        if (elem.attr("class") != "anime") {
+        if (elem.attr("class") !== "anime") {
             servers[elem.attr("class")] = elem.find("a").attr("data-video");
         }
     });
 
     let m3u8;
-    try { m3u8 = await getM3U8(iframe); }
-    catch (e) { console.log(e); m3u8 = null; }
+    try {
+        // Use the updated getM3U8 to fetch streamable m3u8 links
+        m3u8 = await getM3U8(iframe);
+    } catch (e) {
+        console.log(e);
+        m3u8 = null;
+    }
 
     const ScrapedAnime = {
         name:
@@ -162,43 +174,7 @@ async function getEpisode(id) {
     return ScrapedAnime;
 }
 
-// Helper function to fetch M3U8 stream URL from iframe
-async function getM3U8(iframe_url) {
-    let sources = [];
-    let sources_bk = [];
-    let serverUrl = new URL(iframe_url);
-    const goGoServerPage = await fetch(serverUrl.href, {
-        headers: { "User-Agent": USER_AGENT },
-    });
-    const $$ = cheerio.load(await goGoServerPage.text());
-
-    const params = await generateEncryptAjaxParameters(
-        $$,
-        serverUrl.searchParams.get("id")
-    );
-
-    const fetchRes = await fetch(
-        `${serverUrl.protocol}//${serverUrl.hostname}/encrypt-ajax.php?${params}`,
-        {
-            headers: {
-                "User-Agent": USER_AGENT,
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        }
-    );
-
-    const res = decryptEncryptAjaxResponse(await fetchRes.json());
-    res.source.forEach((source) => sources.push(source));
-    res.source_bk.forEach((source) => sources_bk.push(source));
-
-    return {
-        Referer: serverUrl.href,
-        sources: sources,
-        sources_bk: sources_bk,
-    };
-}
-
-// Helper function to change domain of download links
+// Function to handle download links
 async function GogoDLScrapper(animeid, cookie) {
     try {
         cookie = atob(cookie);
@@ -212,22 +188,12 @@ async function GogoDLScrapper(animeid, cookie) {
         let data = {};
         const links = body("div.cf-download").find("a");
 
-        // Function to change the domain
-        function changeDownloadDomain(originalLink) {
-            const oldDomain = "https://gredirect.info/";
-            const newDomain = "https://ggredi.info/";
-
-            if (originalLink.startsWith(oldDomain)) {
-                return originalLink.replace(oldDomain, newDomain);
-            }
-            return originalLink;
-        }
-
+        // Change the download link domain if necessary
         links.each((i, link) => {
             const a = body(link);
             let downloadLink = a.attr("href").trim();
 
-            // Change the domain of the download link
+            // Modify domain if required
             downloadLink = changeDownloadDomain(downloadLink);
 
             data[a.text().trim()] = downloadLink;
@@ -239,7 +205,7 @@ async function GogoDLScrapper(animeid, cookie) {
     }
 }
 
-// Helper function to fetch GogoAnime authentication cookie
+// Fetch the Gogo Anime authentication key
 async function getGogoAuthKey() {
     const response = await fetch(
         "https://api.github.com/repos/TechShreyash/TechShreyash/contents/gogoCookie.txt",
@@ -255,7 +221,6 @@ async function getGogoAuthKey() {
     return cookie;
 }
 
-// Exporting functions
 export {
     getSearch,
     getAnime,
