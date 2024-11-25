@@ -12,7 +12,7 @@ const keys = {
  * @param {cheerio} $ Cheerio object of the embedded video page
  * @param {string} id Id of the embedded video URL
  */
-export async function generateEncryptAjaxParameters($, id) {
+async function generateEncryptAjaxParameters($, id) {
     // Encrypt the key with AES
     const encrypted_key = CryptoJS.AES.encrypt(id, keys.key, {
         iv: keys.iv,
@@ -32,7 +32,7 @@ export async function generateEncryptAjaxParameters($, id) {
  * Decrypts the encrypted-ajax.php response
  * @param {object} obj Response from the server
  */
-export function decryptEncryptAjaxResponse(obj) {
+function decryptEncryptAjaxResponse(obj) {
     const decrypted = CryptoJS.enc.Utf8.stringify(
         CryptoJS.AES.decrypt(obj.data, keys.second_key, {
             iv: keys.iv,
@@ -91,7 +91,7 @@ async function getM3U8(iframe_url) {
  * @param {string} originalLink The original download link
  * @returns {string} The updated download link
  */
-export function changeDownloadDomain(originalLink) {
+function changeDownloadDomain(originalLink) {
     const oldDomain = "https://gredirect.info/";
     const newDomain = "https://ggredi.info/";
 
@@ -102,7 +102,7 @@ export function changeDownloadDomain(originalLink) {
     return originalLink;
 }
 
-// Export all the necessary functions
+// Final export block to export all functions
 export {
     generateEncryptAjaxParameters,
     decryptEncryptAjaxResponse,
